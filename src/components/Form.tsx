@@ -1,11 +1,17 @@
 import React, { FormEvent, useState } from "react";
-import { FieldValue, FieldValues, useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 
 const Form = () => {
-  const form = useForm();
-  console.log(form);
+  const form = useForm<FormData>();
+  //   console.log(form);
 
-  const { register, handleSubmit } = form;
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = form;
+  console.log(errors);
+
   const onSubmit = (data: FieldValues) => console.log(data);
   /* Below code was written to show how to use the 'useRef'. This is not the most effective way of doing it.
   I will be refactoring code to use  below. 
@@ -36,6 +42,11 @@ const Form = () => {
 
   //   };
 
+  interface FormData {
+    name: string;
+    age: number;
+  }
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="mb-3">
@@ -50,11 +61,19 @@ const Form = () => {
             value={person.name}
           */
 
-          {...register("name")}
+          {...register("name", { required: true, minLength: 3 })}
           id="name"
           type="text"
           className="form-control"
         />
+        {errors.name?.type === "required" && (
+          <p className="text-danger">The name field is required</p>
+        )}
+        {errors.name?.type === "minLength" && (
+          <p className="text-danger">
+            The name field must be 3 or more characters long
+          </p>
+        )}
       </div>
       <div className="mb-3">
         <label htmlFor="age" className="form-label">
@@ -62,17 +81,20 @@ const Form = () => {
         </label>
         <input
           /* This is how you can do things without using the 'react-hook-form' package.
-
+          
           onChange={(event) =>
             setPerson({ ...person, age: parseInt(event.target.value) })
-          }
-          value={person.age}
-          */
-          {...register("age")}
+        }
+        value={person.age}
+        */
+          {...register("age", { required: true, minLength: 1 })}
           id="age"
           type="number"
           className="form-control"
         />
+        {errors.age?.type === "required" && (
+          <p className="text-danger">The age field is required</p>
+        )}
       </div>
       <button type="submit" className="btn btn-primary">
         Submit
