@@ -1,8 +1,19 @@
 import React, { FormEvent, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const schema = z.object({
+  name: z.string().min(3, { message: "Name must be at least 3 characters." }),
+  age: z
+    .number({ invalid_type_error: "Age field is required." })
+    .min(18, { message: "Age must be at least 18." }),
+});
+
+type FormData = z.infer<typeof schema>;
 
 const Form = () => {
-  const form = useForm<FormData>();
+  const form = useForm<FormData>({ resolver: zodResolver(schema) });
   //   console.log(form);
 
   const {
@@ -10,7 +21,6 @@ const Form = () => {
     handleSubmit,
     formState: { errors },
   } = form;
-  console.log(errors);
 
   const onSubmit = (data: FieldValues) => console.log(data);
   /* Below code was written to show how to use the 'useRef'. This is not the most effective way of doing it.
@@ -42,10 +52,12 @@ const Form = () => {
 
   //   };
 
-  interface FormData {
-    name: string;
-    age: number;
-  }
+  /* Would be needed if we were not using package 'zod'
+    interface FormData {
+        name: string;
+        age: number;
+    }
+    */
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -61,19 +73,12 @@ const Form = () => {
             value={person.name}
           */
 
-          {...register("name", { required: true, minLength: 3 })}
+          {...register("name")} //Removed this because we are using 'zod' package, { required: true, minLength: 3 })}
           id="name"
           type="text"
           className="form-control"
         />
-        {errors.name?.type === "required" && (
-          <p className="text-danger">The name field is required</p>
-        )}
-        {errors.name?.type === "minLength" && (
-          <p className="text-danger">
-            The name field must be 3 or more characters long
-          </p>
-        )}
+        {errors.name && <p className="text-danger">{errors.name.message}</p>}
       </div>
       <div className="mb-3">
         <label htmlFor="age" className="form-label">
@@ -87,14 +92,12 @@ const Form = () => {
         }
         value={person.age}
         */
-          {...register("age", { required: true, minLength: 1 })}
+          {...register("age", { valueAsNumber: true })} //Removed this because we are using 'zod' package, { required: true, minLength: 1 })}
           id="age"
           type="number"
           className="form-control"
         />
-        {errors.age?.type === "required" && (
-          <p className="text-danger">The age field is required</p>
-        )}
+        {errors.age && <p className="text-danger">{errors.age.message}</p>}
       </div>
       <button type="submit" className="btn btn-primary">
         Submit
