@@ -1,6 +1,7 @@
 import Alert from "./components/Alert";
 import Button from "./components/Button";
 import Cart from "./components/Cart";
+import categories from "./expense-tracker/categories";
 import ExpandableText from "./components/ExpandableText";
 import ExpenseList from "./expense-tracker/components/ExpenseList";
 import ExpenseFilter from "./expense-tracker/components/ExpenseFilter";
@@ -20,8 +21,6 @@ const fakeProducts = await fetch("https://fakestoreapi.com/products?limit=5")
   .then((json) => Array.of(json)[0].map((obj: any) => obj.title));
 
 console.log("FAKE PRODUCTS:", await fakeProducts);
-
-export const categories = ["Groceries", "Utilities", "Entertainment"];
 
 function App() {
   /*
