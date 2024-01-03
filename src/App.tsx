@@ -6,9 +6,11 @@ import Form from "./components/Form";
 import Likes from "./components/Likes";
 import ListGroup from "./components/ListGroup";
 import NavBar from "./components/NavBar";
+import MiniProject from "./components/MiniProject";
 
 import { useState } from "react";
 import { BsFillCalendarFill } from "react-icons/bs";
+import ExpenseList from "./expense-tracker/ExpenseList";
 
 const items = ["New York", "San Fransico", "Tokyo", "London", "Paris"];
 const fakeProducts = await fetch("https://fakestoreapi.com/products?limit=5")
@@ -27,9 +29,23 @@ function App() {
   const [cartItems, setCartItems] = useState(fakeProducts);
   const [isFullText, setIsFullText] = useState(false);
   const [likesVisible, setLikesVisibility] = useState(false);
+  const expensesData = [
+    { id: 1, description: "aaa", amount: 10, category: "Utilities" },
+    { id: 2, description: "bbb", amount: 11, category: "Utilities" },
+    { id: 3, description: "ccc", amount: 12, category: "Utilities" },
+    { id: 4, description: "ddd", amount: 13, category: "Utilities" },
+  ];
+  const [expenses, setExpenses] = useState(expensesData);
 
   return (
     <div>
+      <ExpenseList
+        expenses={expenses}
+        onDelete={(id) =>
+          setExpenses(expenses.filter((expense) => expense.id !== id))
+        }
+      />
+
       <Form />
       <hr />
 
