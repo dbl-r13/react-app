@@ -2,6 +2,9 @@ import Alert from "./components/Alert";
 import Button from "./components/Button";
 import Cart from "./components/Cart";
 import ExpandableText from "./components/ExpandableText";
+import ExpenseList from "./expense-tracker/components/ExpenseList";
+import ExpenseFilter from "./expense-tracker/components/ExpenseFilter";
+import ExpenseForm from "./expense-tracker/components/ExpenseForm";
 import Form from "./components/Form";
 import Likes from "./components/Likes";
 import ListGroup from "./components/ListGroup";
@@ -10,8 +13,6 @@ import MiniProject from "./components/MiniProject";
 
 import { useState } from "react";
 import { BsFillCalendarFill } from "react-icons/bs";
-import ExpenseList from "./expense-tracker/components/ExpenseList";
-import ExpenseFilter from "./expense-tracker/components/ExpenseFilter";
 
 const items = ["New York", "San Fransico", "Tokyo", "London", "Paris"];
 const fakeProducts = await fetch("https://fakestoreapi.com/products?limit=5")
@@ -19,6 +20,8 @@ const fakeProducts = await fetch("https://fakestoreapi.com/products?limit=5")
   .then((json) => Array.of(json)[0].map((obj: any) => obj.title));
 
 console.log("FAKE PRODUCTS:", await fakeProducts);
+
+export const categories = ["Groceries", "Utilities", "Entertainment"];
 
 function App() {
   /*
@@ -43,6 +46,9 @@ function App() {
     : expenses;
   return (
     <div>
+      <div className="mb-5">
+        <ExpenseForm />
+      </div>
       <div className="mb-3">
         <ExpenseFilter
           onSelectCategory={(category) => setSelectedCategory(category)}
