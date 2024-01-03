@@ -10,7 +10,8 @@ import MiniProject from "./components/MiniProject";
 
 import { useState } from "react";
 import { BsFillCalendarFill } from "react-icons/bs";
-import ExpenseList from "./expense-tracker/ExpenseList";
+import ExpenseList from "./expense-tracker/components/ExpenseList";
+import ExpenseFilter from "./expense-tracker/components/ExpenseFilter";
 
 const items = ["New York", "San Fransico", "Tokyo", "London", "Paris"];
 const fakeProducts = await fetch("https://fakestoreapi.com/products?limit=5")
@@ -36,11 +37,19 @@ function App() {
     { id: 4, description: "ddd", amount: 13, category: "Utilities" },
   ];
   const [expenses, setExpenses] = useState(expensesData);
-
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const visibleExpenses = selectedCategory
+    ? expenses.filter((e) => e.category === selectedCategory)
+    : expenses;
   return (
     <div>
+      <div className="mb-3">
+        <ExpenseFilter
+          onSelectCategory={(category) => setSelectedCategory(category)}
+        />
+      </div>
       <ExpenseList
-        expenses={expenses}
+        expenses={visibleExpenses}
         onDelete={(id) =>
           setExpenses(expenses.filter((expense) => expense.id !== id))
         }
