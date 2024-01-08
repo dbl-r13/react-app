@@ -11,6 +11,7 @@ import Likes from "./components/Likes";
 import ListGroup from "./components/ListGroup";
 import NavBar from "./components/NavBar";
 import MiniProject from "./components/MiniProject";
+import ProductList from "./components/ProductList";
 
 import { useState } from "react";
 import { BsFillCalendarFill } from "react-icons/bs";
@@ -30,6 +31,7 @@ function App() {
    }; */
   const [alertVisible, setAlertVisibility] = useState(false);
   const [cartItems, setCartItems] = useState(fakeProducts);
+  const [prodCategory, setProdCategory] = useState("");
   const [isFullText, setIsFullText] = useState(false);
   const [likesVisible, setLikesVisibility] = useState(false);
   const expensesData = [
@@ -45,6 +47,19 @@ function App() {
     : expenses;
   return (
     <div>
+      <div className="mb-3">
+        <select
+          name=""
+          id=""
+          className="form-select"
+          onChange={(event) => setProdCategory(event.target.value)}
+        >
+          <option value=""></option>
+          <option value="Clothing">Clothing</option>
+          <option value="HouseHold">Household</option>
+        </select>
+        <ProductList category={prodCategory} />
+      </div>
       <div className="mb-5">
         <ExpenseForm
           onSubmit={(expense) =>
