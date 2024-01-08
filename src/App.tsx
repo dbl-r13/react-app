@@ -61,8 +61,9 @@ function App() {
     const fetchUsers = async () => {
       try {
         const res = await axios.get<AxiosUser[]>(
-          "https://jsonplaceholder.typicode.com/xusers"
+          "https://jsonplaceholder.typicode.com/users"
         );
+        setUsers(res.data);
       } catch (err) {
         setAxiosError((err as AxiosError).message);
       }
