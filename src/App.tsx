@@ -1,4 +1,4 @@
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, CanceledError } from "axios";
 
 import Alert from "./components/Alert";
 import Button from "./components/Button";
@@ -58,17 +58,31 @@ function App() {
   const [axiosError, setAxiosError] = useState("");
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const res = await axios.get<AxiosUser[]>(
-          "https://jsonplaceholder.typicode.com/users"
-        );
-        setUsers(res.data);
-      } catch (err) {
-        setAxiosError((err as AxiosError).message);
-      }
-    };
-    fetchUsers();
+    /** const fetchUsers = async () => {
+     try {
+       const res = await axios.get<AxiosUser[]>(
+         "https://jsonplaceholder.typicode.com/users",
+         { signal: controller.signal }
+         );
+         setUsers(res.data);
+        } catch (err) {
+          if (err instanceof CanceledError) return;
+          setAxiosError((err as AxiosError).message);
+        }
+      };
+      fetchUsers();
+      */
+    const controller = new AbortController();
+    axios
+      .get<AxiosUser[]>("https://jsonplaceholder.typicode.com/users", {
+        signal: controller.signal,
+      })
+      .then((res) => setUsers(res.data))
+      .catch((err) => {
+        if (err instanceof CanceledError) return;
+        setAxiosError(err.message);
+      });
+    return () => controller.abort();
 
     /**
      * This is a way that can be used in useEffect. The above way is just another approach to doing the same thing.
