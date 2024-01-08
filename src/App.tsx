@@ -48,21 +48,27 @@ function App() {
     ? expenses.filter((e) => e.category === selectedCategory)
     : expenses;
 
+  //TODO: add AxiosUser component and make sure all things function properly once added.
+  //AxiosUser Section: added on page without component created
   interface AxiosUser {
     id: number;
     name: string;
   }
   const [users, setUsers] = useState<AxiosUser[]>([]);
+  const [axiosError, setAxiosError] = useState("");
+
   useEffect(() => {
     axios
-      .get<AxiosUser[]>("https://jsonplaceholder.typicode.com/users")
-      .then((res) => setUsers(res.data));
+      .get<AxiosUser[]>("https://jsonplaceholder.typicode.com/xusers")
+      .then((res) => setUsers(res.data))
+      .catch((err) => setAxiosError(err.message));
   }, []);
 
   return (
     <div>
       <div className="mb-3">
         <h2>Axios User List:</h2>
+        {axiosError && <p className="text-danger">{axiosError}</p>}
         <ul>
           {users.map((user) => (
             <li className="list-group-item" key={user.id}>
