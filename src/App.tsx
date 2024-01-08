@@ -1,3 +1,5 @@
+import axios from "axios";
+
 import Alert from "./components/Alert";
 import Button from "./components/Button";
 import Cart from "./components/Cart";
@@ -13,7 +15,7 @@ import NavBar from "./components/NavBar";
 import MiniProject from "./components/MiniProject";
 import ProductList from "./components/ProductList";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BsFillCalendarFill } from "react-icons/bs";
 
 const items = ["New York", "San Fransico", "Tokyo", "London", "Paris"];
@@ -45,8 +47,30 @@ function App() {
   const visibleExpenses = selectedCategory
     ? expenses.filter((e) => e.category === selectedCategory)
     : expenses;
+
+  interface AxiosUser {
+    id: number;
+    name: string;
+  }
+  const [users, setUsers] = useState<AxiosUser[]>([]);
+  useEffect(() => {
+    axios
+      .get<AxiosUser[]>("https://jsonplaceholder.typicode.com/users")
+      .then((res) => setUsers(res.data));
+  }, []);
+
   return (
     <div>
+      <div className="mb-3">
+        <h2>Axios User List:</h2>
+        <ul>
+          {users.map((user) => (
+            <li className="list-group-item" key={user.id}>
+              {user.name}
+            </li>
+          ))}
+        </ul>
+      </div>
       <div className="mb-3">
         <select
           name=""
