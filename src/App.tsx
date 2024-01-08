@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 import Alert from "./components/Alert";
 import Button from "./components/Button";
@@ -58,10 +58,22 @@ function App() {
   const [axiosError, setAxiosError] = useState("");
 
   useEffect(() => {
-    axios
-      .get<AxiosUser[]>("https://jsonplaceholder.typicode.com/xusers")
-      .then((res) => setUsers(res.data))
-      .catch((err) => setAxiosError(err.message));
+    const fetchUsers = async () => {
+      try {
+        const res = await axios.get<AxiosUser[]>(
+          "https://jsonplaceholder.typicode.com/xusers"
+        );
+      } catch (err) {
+        setAxiosError((err as AxiosError).message);
+      }
+    };
+    fetchUsers();
+
+    /**
+     * This is a way that can be used in useEffect. The above way is just another approach to doing the same thing.
+     * .then((res) => setUsers(res.data))
+     * .catch((err) => setAxiosError(err.message));
+     */
   }, []);
 
   return (
