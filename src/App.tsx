@@ -56,6 +56,7 @@ function App() {
   }
   const [users, setUsers] = useState<AxiosUser[]>([]);
   const [axiosError, setAxiosError] = useState("");
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     /** const fetchUsers = async () => {
@@ -73,15 +74,27 @@ function App() {
       fetchUsers();
       */
     const controller = new AbortController();
+
+    setLoading(true);
     axios
       .get<AxiosUser[]>("https://jsonplaceholder.typicode.com/users", {
         signal: controller.signal,
       })
-      .then((res) => setUsers(res.data))
+      .then((res) => {
+        setUsers(res.data);
+        setLoading(false);
+      })
       .catch((err) => {
         if (err instanceof CanceledError) return;
         setAxiosError(err.message);
+        setLoading(false);
       });
+    /**.finally(() => setLoading(false));
+     * All Promises have a .finally() method that can be called and is the last things that is run after the Promise is either resolved or rejected.
+     *
+     * IMPORTANT NOTE: The .finally() method does not work in development mode. Trying to find documentation on why but know that it does not function correctly in Development mode which is why code above is duplicated.
+     *
+     */
     return () => controller.abort();
 
     /**
@@ -96,6 +109,7 @@ function App() {
       <div className="mb-3">
         <h2>Axios User List:</h2>
         {axiosError && <p className="text-danger">{axiosError}</p>}
+        {isLoading && <div className="spinner-border"></div>}
         <ul>
           {users.map((user) => (
             <li className="list-group-item" key={user.id}>
