@@ -1,4 +1,4 @@
-import axios, { AxiosError, CanceledError } from "axios";
+import axios, { Axios, AxiosError, CanceledError } from "axios";
 
 import Alert from "./components/Alert";
 import Button from "./components/Button";
@@ -104,16 +104,38 @@ function App() {
      */
   }, []);
 
+  const deleteUser = (user: AxiosUser) => {
+    const originalUsers = [...users];
+    console.log(`User ${user.name}, id: ${user.id} was deleted`);
+
+    setUsers(users.filter((u) => u.id !== user.id));
+    axios
+      .delete(`https://jsonplaceholder.typicode.com/users/${user.id}`)
+      .catch((err) => {
+        setAxiosError(err.message);
+        setUsers(originalUsers);
+      });
+  };
+
   return (
     <div>
       <div className="mb-3">
         <h2>Axios User List:</h2>
         {axiosError && <p className="text-danger">{axiosError}</p>}
         {isLoading && <div className="spinner-border"></div>}
-        <ul>
+        <ul className="list-group">
           {users.map((user) => (
-            <li className="list-group-item" key={user.id}>
+            <li
+              className="list-group-item d-flex justify-content-between"
+              key={user.id}
+            >
               {user.name}
+              <button
+                className="btn btn-outline-danger"
+                onClick={() => deleteUser(user)}
+              >
+                Delete
+              </button>
             </li>
           ))}
         </ul>
