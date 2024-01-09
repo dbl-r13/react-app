@@ -104,6 +104,18 @@ function App() {
      */
   }, []);
 
+  const addUser = () => {
+    const originalUsers = [...users];
+    const newUser = { id: 0, name: "Mosh" };
+    setUsers([...users, newUser]);
+    axios
+      .post(`https://jsonplaceholder.typicode.com/users`, newUser)
+      .then(({ data: savedUser }) => setUsers([...users, savedUser]))
+      .catch((err) => {
+        setAxiosError(err.message);
+        setUsers(originalUsers);
+      });
+  };
   const deleteUser = (user: AxiosUser) => {
     const originalUsers = [...users];
     console.log(`User ${user.name}, id: ${user.id} was deleted`);
@@ -116,14 +128,15 @@ function App() {
         setUsers(originalUsers);
       });
   };
-
-  const addUser = () => {
+  const updateUser = (user: AxiosUser) => {
     const originalUsers = [...users];
-    const newUser = { id: 0, name: "Mosh" };
-    setUsers([...users, newUser]);
+    const updatedUser = { ...user, name: `${user.name} !` };
+    setUsers(users.map((u) => (u.id === user.id ? updatedUser : u)));
     axios
-      .post(`https://jsonplaceholder.typicode.com/users`, newUser)
-      .then(({ data: savedUser }) => setUsers([...users, savedUser]))
+      .patch(
+        `https://jsonplaceholder.typicode.com/users/${user.id}`,
+        updatedUser
+      )
       .catch((err) => {
         setAxiosError(err.message);
         setUsers(originalUsers);
@@ -146,12 +159,20 @@ function App() {
               key={user.id}
             >
               {user.name}
-              <button
-                className="btn btn-outline-danger"
-                onClick={() => deleteUser(user)}
-              >
-                Delete
-              </button>
+              <div>
+                <button
+                  className="btn btn-outline-secondary mx-1"
+                  onClick={() => updateUser(user)}
+                >
+                  Update
+                </button>
+                <button
+                  className="btn btn-outline-danger"
+                  onClick={() => deleteUser(user)}
+                >
+                  Delete
+                </button>
+              </div>
             </li>
           ))}
         </ul>
