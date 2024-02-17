@@ -1,5 +1,3 @@
-import axios, { Axios, AxiosError, CanceledError } from "axios";
-
 import Alert from "./components/Alert";
 import Button from "./components/Button";
 import Cart from "./components/Cart";
@@ -17,6 +15,8 @@ import ProductList from "./components/ProductList";
 
 import { useEffect, useState } from "react";
 import { BsFillCalendarFill } from "react-icons/bs";
+import userServices, { AxiosUser } from "./services/user-services";
+import { CanceledError } from "./services/api-client";
 
 const items = ["New York", "San Fransico", "Tokyo", "London", "Paris"];
 const fakeProducts = await fetch("https://fakestoreapi.com/products?limit=5")
@@ -48,40 +48,19 @@ function App() {
     ? expenses.filter((e) => e.category === selectedCategory)
     : expenses;
 
-  //TODO: add AxiosUser component and make sure all things function properly once added.
-  //AxiosUser Section: added on page without component created
-  interface AxiosUser {
-    id: number;
-    name: string;
-  }
+  
   const [users, setUsers] = useState<AxiosUser[]>([]);
   const [axiosError, setAxiosError] = useState("");
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
-    /** const fetchUsers = async () => {
-     try {
-       const res = await axios.get<AxiosUser[]>(
-         "https://jsonplaceholder.typicode.com/users",
-         { signal: controller.signal }
-         );
-         setUsers(res.data);
-        } catch (err) {
-          if (err instanceof CanceledError) return;
-          setAxiosError((err as AxiosError).message);
-        }
-      };
-      fetchUsers();
-      */
-    const controller = new AbortController();
 
     setLoading(true);
-    axios
-      .get<AxiosUser[]>("https://jsonplaceholder.typicode.com/users", {
-        signal: controller.signal,
-      })
-      .then((res) => {
+    const {request, cancel}  = userServices.getAllAxiosUsers();
+
+    request.then((res) => {
         setUsers(res.data);
+        console.log("MADE IT")
         setLoading(false);
       })
       .catch((err) => {
@@ -95,7 +74,7 @@ function App() {
      * IMPORTANT NOTE: The .finally() method does not work in development mode. Trying to find documentation on why but know that it does not function correctly in Development mode which is why code above is duplicated.
      *
      */
-    return () => controller.abort();
+    return () => cancel();
 
     /**
      * This is a way that can be used in useEffect. The above way is just another approach to doing the same thing.
@@ -108,8 +87,7 @@ function App() {
     const originalUsers = [...users];
     const newUser = { id: 0, name: "Mosh" };
     setUsers([...users, newUser]);
-    axios
-      .post(`https://jsonplaceholder.typicode.com/users`, newUser)
+    userServices.addAxiosUser(newUser)
       .then(({ data: savedUser }) => setUsers([...users, savedUser]))
       .catch((err) => {
         setAxiosError(err.message);
@@ -121,8 +99,7 @@ function App() {
     console.log(`User ${user.name}, id: ${user.id} was deleted`);
 
     setUsers(users.filter((u) => u.id !== user.id));
-    axios
-      .delete(`https://jsonplaceholder.typicode.com/users/${user.id}`)
+    userServices.deleteAxiosUser(user.id)
       .catch((err) => {
         setAxiosError(err.message);
         setUsers(originalUsers);
@@ -132,11 +109,7 @@ function App() {
     const originalUsers = [...users];
     const updatedUser = { ...user, name: `${user.name} !` };
     setUsers(users.map((u) => (u.id === user.id ? updatedUser : u)));
-    axios
-      .patch(
-        `https://jsonplaceholder.typicode.com/users/${user.id}`,
-        updatedUser
-      )
+   userServices.updateAxiosUser(user.id,updateUser)
       .catch((err) => {
         setAxiosError(err.message);
         setUsers(originalUsers);
