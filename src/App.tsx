@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { BsFillCalendarFill } from "react-icons/bs";
 import userServices, { AxiosUser } from "./services/user-services";
 import { CanceledError } from "./services/api-client";
+import useUsers from "./hooks/useUsers";
 
 const items = ["New York", "San Fransico", "Tokyo", "London", "Paris"];
 const fakeProducts = await fetch("https://fakestoreapi.com/products?limit=5")
@@ -49,38 +50,7 @@ function App() {
     : expenses;
 
   
-  const [users, setUsers] = useState<AxiosUser[]>([]);
-  const [axiosError, setAxiosError] = useState("");
-  const [isLoading, setLoading] = useState(false);
-
-  useEffect(() => {
-
-    setLoading(true);
-    const {request, cancel}  = userServices.getAll<AxiosUser>();
-
-    request.then((res) => {
-        setUsers(res.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        if (err instanceof CanceledError) return;
-        setAxiosError(err.message);
-        setLoading(false);
-      });
-    /**.finally(() => setLoading(false));
-     * All Promises have a .finally() method that can be called and is the last things that is run after the Promise is either resolved or rejected.
-     *
-     * IMPORTANT NOTE: The .finally() method does not work in development mode. Trying to find documentation on why but know that it does not function correctly in Development mode which is why code above is duplicated.
-     *
-     */
-    return () => cancel();
-
-    /**
-     * This is a way that can be used in useEffect. The above way is just another approach to doing the same thing.
-     * .then((res) => setUsers(res.data))
-     * .catch((err) => setAxiosError(err.message));
-     */
-  }, []);
+  const { users, axiosError, isLoading, setUsers, setAxiosError } = useUsers();
 
   const addUser = () => {
     const originalUsers = [...users];
