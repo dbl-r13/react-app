@@ -56,11 +56,10 @@ function App() {
   useEffect(() => {
 
     setLoading(true);
-    const {request, cancel}  = userServices.getAllAxiosUsers();
+    const {request, cancel}  = userServices.getAll<AxiosUser>();
 
     request.then((res) => {
         setUsers(res.data);
-        console.log("MADE IT")
         setLoading(false);
       })
       .catch((err) => {
@@ -87,7 +86,7 @@ function App() {
     const originalUsers = [...users];
     const newUser = { id: 0, name: "Mosh" };
     setUsers([...users, newUser]);
-    userServices.addAxiosUser(newUser)
+    userServices.add(newUser)
       .then(({ data: savedUser }) => setUsers([...users, savedUser]))
       .catch((err) => {
         setAxiosError(err.message);
@@ -99,7 +98,7 @@ function App() {
     console.log(`User ${user.name}, id: ${user.id} was deleted`);
 
     setUsers(users.filter((u) => u.id !== user.id));
-    userServices.deleteAxiosUser(user.id)
+    userServices.delete(user.id)
       .catch((err) => {
         setAxiosError(err.message);
         setUsers(originalUsers);
@@ -109,7 +108,7 @@ function App() {
     const originalUsers = [...users];
     const updatedUser = { ...user, name: `${user.name} !` };
     setUsers(users.map((u) => (u.id === user.id ? updatedUser : u)));
-   userServices.updateAxiosUser(user.id,updateUser)
+   userServices.update(user.id,updateUser)
       .catch((err) => {
         setAxiosError(err.message);
         setUsers(originalUsers);
